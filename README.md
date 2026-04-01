@@ -64,9 +64,8 @@ Together, these leaky values cover **all 12 depression classes**, which is why t
 
 ### Proof of Leakage (Orange Workflow)
 
-To verify each leaky value visually in Orange:
-1. Add a **Select Rows** widget with a single condition (e.g., `Symptoms = 2`)
-2. Connect to a **Distributions** widget
+I have addrd the workflow to verify each leaky value visually in Orange
+1. Open any **Distributions** widget
 3. Set the variable to `Depression_Type`
 4. Result: a **single bar** appears at exactly one class = confirmed leakage
 
