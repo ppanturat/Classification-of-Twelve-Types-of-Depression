@@ -1,0 +1,10 @@
+services:
+  depression-app:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app  # Optional: for development, mount the code
+    environment:
+      - FLASK_ENV=development
+    restart: unless-stopped
