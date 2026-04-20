@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max upload
 
-MODELS_DIR = os.path.join(os.path.dirname(__file__), 'models')
+MODELS_DIR = os.path.join(os.path.dirname(__file__), 'tmp')
 os.makedirs(MODELS_DIR, exist_ok=True)
 
 ALLOWED_EXTENSIONS = {'pkl', 'joblib', 'json'}
@@ -183,4 +183,4 @@ def predict():
 
 if __name__ == '__main__':
     load_models_from_folder()
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, port=5000)
