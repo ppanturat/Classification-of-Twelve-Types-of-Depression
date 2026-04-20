@@ -8,10 +8,9 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max upload
 
-MODELS_DIR = os.path.join(os.path.dirname(__file__), 'models')
-os.makedirs(MODELS_DIR, exist_ok=True)
-
 ALLOWED_EXTENSIONS = {'pkl', 'joblib', 'json'}
+
+loaded_models = {}
 
 FEATURE_ORDER = [
     'Gender', 'Age', 'Employment_Status', 'Search_Depression_Online',
@@ -37,18 +36,16 @@ DEPRESSION_TYPES = {
 }
 
 # Use an absolute path based on the current working directory
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+BASE_DIR = os.path.dirname(__file__)
 MODELS_DIR = os.path.join(BASE_DIR, 'tmp') 
 
 def load_models_from_folder():
-    global loaded_models
-    loaded_models = {}
-    
+    print("Loading models from folder...")
     # Debugging: Vercel logs will show you if the directory actually exists
     if not os.path.exists(MODELS_DIR):
         print(f"Directory not found at: {MODELS_DIR}")
         return
-
+    print(MODELS_DIR)
     # Filter files
     pkl_files = sorted([f for f in os.listdir(MODELS_DIR) if f.endswith('.pkl')])
     
@@ -71,7 +68,6 @@ def load_models_from_folder():
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-
 def load_model_from_path(path, filename):
     ext = filename.rsplit('.', 1)[1].lower()
     if ext == 'json':
@@ -87,9 +83,17 @@ def load_model_from_path(path, filename):
             model = pickle.load(f)
         return model, 'sklearn'
 
+# Load models at import time so the app works whether run directly or imported by a WSGI server.
+load_models_from_folder()
+
 @app.route('/debug')
 def debug():
-    return str(os.listdir(os.path.join(BASE_DIR, 'models')))
+    tmp_files = os.listdir(MODELS_DIR) if os.path.exists(MODELS_DIR) else []
+    return jsonify({
+        'tmp_files': tmp_files,
+        'loaded_models': [info['name'] for info in loaded_models.values()]
+    })
+
 
 @app.route('/')
 def index():
@@ -198,5 +202,4 @@ def predict():
 
 
 if __name__ == '__main__':
-    load_models_from_folder()
     app.run(debug=True, port=5000)
