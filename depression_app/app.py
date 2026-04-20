@@ -40,6 +40,21 @@ DEPRESSION_TYPES = {
 loaded_models = {}
 
 
+def load_models_from_folder():
+    global loaded_models
+    loaded_models = {}
+    if not os.path.exists(MODELS_DIR):
+        return
+    pkl_files = [f for f in os.listdir(MODELS_DIR) if f.endswith('.pkl')]
+    for i, filename in enumerate(pkl_files[:3]):  # Load up to 3 models into slots 0,1,2
+        path = os.path.join(MODELS_DIR, filename)
+        try:
+            model, model_type = load_model_from_path(path, filename)
+            loaded_models[i] = {'model': model, 'name': filename, 'type': model_type, 'path': path}
+        except Exception as e:
+            print(f"Failed to load {filename}: {e}")
+
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -65,48 +80,6 @@ def index():
     return render_template('index.html',
                            feature_order=FEATURE_ORDER,
                            depression_types=DEPRESSION_TYPES)
-
-
-@app.route('/upload_model', methods=['POST'])
-def upload_model():
-    slot = request.form.get('slot', type=int)
-    if slot is None or slot < 0 or slot > 2:
-        return jsonify({'error': 'Invalid slot (0–2 only)'}), 400
-
-    if 'model_file' not in request.files:
-        return jsonify({'error': 'No file provided'}), 400
-
-    file = request.files['model_file']
-    if file.filename == '':
-        return jsonify({'error': 'Empty filename'}), 400
-
-    if not allowed_file(file.filename):
-        return jsonify({'error': 'Unsupported file type. Use .pkl, .joblib, or .json'}), 400
-
-    filename = secure_filename(file.filename)
-    save_path = os.path.join(MODELS_DIR, f'slot_{slot}_{filename}')
-    file.save(save_path)
-
-    try:
-        model, model_type = load_model_from_path(save_path, filename)
-        loaded_models[slot] = {'model': model, 'name': filename, 'type': model_type, 'path': save_path}
-        return jsonify({'success': True, 'slot': slot, 'name': filename, 'type': model_type})
-    except Exception as e:
-        os.remove(save_path)
-        return jsonify({'error': f'Failed to load model: {str(e)}'}), 400
-
-
-@app.route('/remove_model', methods=['POST'])
-def remove_model():
-    slot = request.json.get('slot', type(0))
-    slot = int(request.json.get('slot', -1))
-    if slot in loaded_models:
-        try:
-            os.remove(loaded_models[slot]['path'])
-        except Exception:
-            pass
-        del loaded_models[slot]
-    return jsonify({'success': True})
 
 
 @app.route('/models_status', methods=['GET'])
@@ -209,4 +182,5 @@ def predict():
 
 
 if __name__ == '__main__':
+    load_models_from_folder()
     app.run(debug=True, port=5000)

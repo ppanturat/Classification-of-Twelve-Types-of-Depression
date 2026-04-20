@@ -94,11 +94,6 @@ body {
   border: none; background: none; font-family: inherit; padding: 0;
 }
 .slot-upload-btn:hover { text-decoration: underline; }
-.remove-btn {
-  border: none; background: none; cursor: pointer;
-  font-size: 12px; color: var(--text3); padding: 0; line-height: 1;
-}
-.remove-btn:hover { color: var(--red); }
 
 /* Page content */
 .page { display: none; }
@@ -316,15 +311,6 @@ body {
 
     <div class="nav-label">Models</div>
     <div class="model-slots" id="sidebarSlots"></div>
-
-    <div style="margin-top: auto; padding-top: 1rem;">
-      <button class="nav-btn" onclick="showPage('upload')" id="nav-upload">
-        <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M8 10V3M5 6l3-3 3 3"/><path d="M3 13h10"/>
-        </svg>
-        Upload model
-      </button>
-    </div>
   </aside>
 
   <!-- MAIN -->
@@ -341,8 +327,8 @@ body {
           <div class="field">
             <label>Gender</label>
             <select id="Gender">
-              <option value="0">0 — Male</option>
-              <option value="1">1 — Female</option>
+              <option value="0">Male</option>
+              <option value="1">Female</option>
             </select>
           </div>
           <div class="field">
@@ -352,11 +338,11 @@ body {
           <div class="field">
             <label>Employment status</label>
             <select id="Employment_Status">
-              <option value="0">0 — Unemployed</option>
-              <option value="1">1 — Student</option>
-              <option value="2">2 — Employed</option>
-              <option value="3">3 — Self-employed</option>
-              <option value="4">4 — Other</option>
+              <option value="0">Unemployed</option>
+              <option value="1">Student</option>
+              <option value="2">Employed</option>
+              <option value="3">Self-employed</option>
+              <option value="4">Other</option>
             </select>
           </div>
         </div>
@@ -368,24 +354,24 @@ body {
           <div class="field">
             <label>Searched depression online</label>
             <select id="Search_Depression_Online">
-              <option value="0">0 — No</option>
-              <option value="1">1 — Yes</option>
+              <option value="0">No</option>
+              <option value="1">Yes</option>
             </select>
           </div>
           <div class="field">
             <label>Worsening depression</label>
             <select id="Worsening_Depression">
-              <option value="0">0 — No</option>
-              <option value="1">1 — Yes</option>
+              <option value="0">No</option>
+              <option value="1">Yes</option>
             </select>
           </div>
           <div class="field">
             <label>Meals per day</label>
             <select id="How_many_times_you_eat">
-              <option value="0">0 — ≤2 meals</option>
-              <option value="1">1 — 3 meals</option>
-              <option value="2">2 — 4–5 meals</option>
-              <option value="3">3 — &gt;5 meals</option>
+              <option value="0">≤2 meals</option>
+              <option value="1">meals</option>
+              <option value="2">4–5 meals</option>
+              <option value="3">&gt;5 meals</option>
             </select>
           </div>
           <div class="field">
@@ -395,10 +381,10 @@ body {
           <div class="field">
             <label>Social media while eating</label>
             <select id="SocialMedia_WhileEating">
-              <option value="0">0 — Never</option>
-              <option value="1">1 — Rarely</option>
-              <option value="2">2 — Often</option>
-              <option value="3">3 — Always</option>
+              <option value="0">Never</option>
+              <option value="1">Rarely</option>
+              <option value="2">Often</option>
+              <option value="3">Always</option>
             </select>
           </div>
           <div class="field">
@@ -414,10 +400,10 @@ body {
           <div class="field">
             <label>Nervous level</label>
             <select id="Nervous_Level">
-              <option value="0">0 — None</option>
-              <option value="1">1 — Mild</option>
-              <option value="2">2 — Moderate</option>
-              <option value="3">3 — Severe</option>
+              <option value="0">None</option>
+              <option value="1">Mild</option>
+              <option value="2">Moderate</option>
+              <option value="3">Severe</option>
             </select>
           </div>
           <div class="field">
@@ -428,24 +414,24 @@ body {
           <div class="field">
             <label>Self harm history</label>
             <select id="Self_Harm">
-              <option value="0">0 — No history</option>
-              <option value="1">1 — History of self-harm</option>
+              <option value="0">No history</option>
+              <option value="1">History of self-harm</option>
             </select>
           </div>
           <div class="field">
             <label>Mental health support</label>
             <select id="Mental_Health_Support">
-              <option value="0">0 — No</option>
-              <option value="1">1 — Yes</option>
+              <option value="0">No</option>
+              <option value="1">Yes</option>
             </select>
           </div>
           <div class="field">
             <label>Suicide attempts</label>
             <select id="Suicide_Attempts">
-              <option value="0">0 — None</option>
-              <option value="1">1 — Once</option>
-              <option value="2">2 — Twice</option>
-              <option value="3">3 — Three or more</option>
+              <option value="0">None</option>
+              <option value="1">Once</option>
+              <option value="2">Twice</option>
+              <option value="3">Three or more</option>
             </select>
           </div>
         </div>
@@ -454,38 +440,6 @@ body {
       <button class="predict-btn" id="predictBtn" onclick="runPrediction()">Run prediction</button>
       <div id="predictStatus" class="status-msg"></div>
       <div id="resultsArea"></div>
-    </div>
-
-    <!-- UPLOAD PAGE -->
-    <div class="page" id="page-upload">
-      <h1 class="page-title">Upload model</h1>
-      <p class="page-sub">Upload up to 3 trained scikit-learn (.pkl / .joblib) or XGBoost (.json) models.</p>
-
-      <div class="card">
-        <div class="card-title">Select slot</div>
-        <div class="slot-select">
-          <input type="radio" name="slot" id="slot0" value="0" class="slot-radio" checked>
-          <label for="slot0" class="slot-radio-label">Model 1</label>
-          <input type="radio" name="slot" id="slot1" value="1" class="slot-radio">
-          <label for="slot1" class="slot-radio-label">Model 2</label>
-          <input type="radio" name="slot" id="slot2" value="2" class="slot-radio">
-          <label for="slot2" class="slot-radio-label">Model 3</label>
-        </div>
-
-        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()"
-             ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-          <input type="file" id="fileInput" accept=".pkl,.joblib,.json" onchange="handleFileSelect(this.files[0])">
-          <span class="uz-icon">⬆</span>
-          <div class="uz-title">Click to browse or drag &amp; drop</div>
-          <div class="uz-sub">.pkl, .joblib (scikit-learn) &nbsp;·&nbsp; .json (XGBoost)</div>
-        </div>
-        <div id="uploadStatus" class="status-msg"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Loaded models</div>
-        <div id="loadedModelsList" style="font-size:14px;color:var(--text2)">No models loaded yet.</div>
-      </div>
     </div>
 
     <!-- LABELS PAGE -->
@@ -557,51 +511,6 @@ function clearStatus(elId) {
   el.textContent = '';
 }
 
-// ── Upload ───────────────────────────────────────────────────────────────
-function handleDragOver(e) { e.preventDefault(); document.getElementById('uploadZone').classList.add('drag-over'); }
-function handleDragLeave(e) { document.getElementById('uploadZone').classList.remove('drag-over'); }
-function handleDrop(e) {
-  e.preventDefault();
-  document.getElementById('uploadZone').classList.remove('drag-over');
-  const file = e.dataTransfer.files[0];
-  if (file) handleFileSelect(file);
-}
-
-async function handleFileSelect(file) {
-  if (!file) return;
-  const slot = parseInt(document.querySelector('input[name="slot"]:checked').value);
-  setStatus('uploadStatus', '⏳ Uploading and loading model…', 'info');
-
-  const fd = new FormData();
-  fd.append('slot', slot);
-  fd.append('model_file', file);
-
-  try {
-    const res = await fetch('/upload_model', { method: 'POST', body: fd });
-    const data = await res.json();
-    if (!res.ok || data.error) {
-      setStatus('uploadStatus', '✗ ' + (data.error || 'Upload failed'), 'error');
-    } else {
-      setStatus('uploadStatus', `✓ Model ${slot + 1} loaded: ${data.name} (${data.type})`, 'success');
-      refreshModelsUI();
-    }
-  } catch(e) {
-    setStatus('uploadStatus', '✗ Network error: ' + e.message, 'error');
-  }
-}
-
-// ── Remove model ─────────────────────────────────────────────────────────
-async function removeModel(slot) {
-  try {
-    await fetch('/remove_model', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ slot })
-    });
-    refreshModelsUI();
-  } catch(e) { console.error(e); }
-}
-
 // ── Refresh sidebar + upload list ────────────────────────────────────────
 async function refreshModelsUI() {
   const res = await fetch('/models_status');
@@ -616,34 +525,16 @@ async function refreshModelsUI() {
         <div class="slot-header">
           <span class="slot-label loaded">Model ${i+1}</span>
           <span class="slot-tag">${m.type}</span>
-          <button class="remove-btn" onclick="removeModel(${i})" title="Remove">✕</button>
         </div>
         <div class="slot-name">${m.name}</div>
       </div>`;
     } else {
       return `<div class="model-slot-item">
         <div class="slot-header"><span class="slot-label">Model ${i+1}</span></div>
-        <button class="slot-upload-btn" onclick="showPage('upload')">+ Upload model</button>
+        <div class="slot-name" style="color:var(--text3)">No model loaded</div>
       </div>`;
     }
   }).join('');
-
-  // Upload page list
-  const list = document.getElementById('loadedModelsList');
-  const loaded = Object.entries(status);
-  if (!loaded.length) {
-    list.innerHTML = '<span style="color:var(--text3)">No models loaded yet.</span>';
-  } else {
-    list.innerHTML = loaded.map(([slot, m]) => `
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--border)">
-        <div>
-          <span style="font-weight:500">Model ${parseInt(slot)+1}</span>
-          <span style="color:var(--text3);font-size:12px;margin-left:8px">${m.type}</span>
-          <div style="font-size:12px;color:var(--text2);margin-top:2px">${m.name}</div>
-        </div>
-        <button onclick="removeModel(${slot})" style="border:0.5px solid var(--border-med);background:var(--bg);color:var(--text2);border-radius:var(--radius-sm);padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit">Remove</button>
-      </div>`).join('');
-  }
 }
 
 // ── Predict ───────────────────────────────────────────────────────────────
@@ -742,16 +633,16 @@ function renderResults(data) {
       </div>`;
   }
 
-  // Probability distribution (first model that has it)
+  // Probability distribution for each model that has it
   let probaHtml = '';
-  const modelWithProba = results.find(r => r.proba_dist && Object.keys(r.proba_dist).length > 0);
-  if (modelWithProba) {
-    const dist = modelWithProba.proba_dist;
+  const modelsWithProba = results.filter(r => r.proba_dist && Object.keys(r.proba_dist).length > 0);
+  modelsWithProba.forEach(model => {
+    const dist = model.proba_dist;
     const sorted = Object.entries(dist).sort((a, b) => parseFloat(b[1]) - parseFloat(a[1]));
     const topClass = sorted[0][0];
-    probaHtml = `
+    probaHtml += `
       <div class="card" style="margin-top:1rem">
-        <div class="card-title">Class probability distribution — Model ${modelWithProba.slot + 1}</div>
+        <div class="card-title">Class probability distribution — Model ${model.slot + 1} (${model.model_name})</div>
         <div class="proba-section">
           ${sorted.map(([cls, pct]) => `
             <div class="proba-row">
@@ -763,7 +654,7 @@ function renderResults(data) {
             </div>`).join('')}
         </div>
       </div>`;
-  }
+  });
 
   resultsEl.innerHTML = cardsHtml + ensHtml + probaHtml;
 }
