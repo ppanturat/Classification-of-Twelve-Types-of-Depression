@@ -38,7 +38,7 @@ DEPRESSION_TYPES = {
 
 # Use an absolute path based on the current working directory
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-MODELS_DIR = os.path.join(BASE_DIR, 'models') 
+MODELS_DIR = os.path.join(BASE_DIR, 'tmp') 
 
 def load_models_from_folder():
     global loaded_models
