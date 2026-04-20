@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max upload
 
-MODELS_DIR = os.path.join(os.path.dirname(__file__), 'tmp')
+MODELS_DIR = os.path.join(os.path.dirname(__file__), 'models')
 os.makedirs(MODELS_DIR, exist_ok=True)
 
 ALLOWED_EXTENSIONS = {'pkl', 'joblib', 'json'}
@@ -36,24 +36,37 @@ DEPRESSION_TYPES = {
     11: {"name": "Other specified depressive disorder",   "abbr": "OSDD"},
 }
 
-# In-memory model store: slot_index -> loaded model object
-loaded_models = {}
-
+# Use an absolute path based on the current working directory
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+MODELS_DIR = os.path.join(BASE_DIR, 'models') 
 
 def load_models_from_folder():
     global loaded_models
     loaded_models = {}
+    
+    # Debugging: Vercel logs will show you if the directory actually exists
     if not os.path.exists(MODELS_DIR):
+        print(f"Directory not found at: {MODELS_DIR}")
         return
-    pkl_files = [f for f in os.listdir(MODELS_DIR) if f.endswith('.pkl')]
-    for i, filename in enumerate(pkl_files[:3]):  # Load up to 3 models into slots 0,1,2
-        path = os.path.join(MODELS_DIR, filename)
-        try:
-            model, model_type = load_model_from_path(path, filename)
-            loaded_models[i] = {'model': model, 'name': filename, 'type': model_type, 'path': path}
-        except Exception as e:
-            print(f"Failed to load {filename}: {e}")
 
+    # Filter files
+    pkl_files = sorted([f for f in os.listdir(MODELS_DIR) if f.endswith('.pkl')])
+    
+    for i, filename in enumerate(pkl_files[:3]):
+        path = os.path.join(MODELS_DIR, filename)
+        print(path)
+        try:
+            # Ensure load_model_from_path doesn't require write access
+            model, model_type = load_model_from_path(path, filename)
+            loaded_models[i] = {
+                'model': model, 
+                'name': filename, 
+                'type': model_type, 
+                'path': path
+            }
+        except Exception as e:
+            # This will show up in Vercel's 'Logs' tab
+            print(f"Failed to load {filename}: {str(e)}")
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -74,6 +87,9 @@ def load_model_from_path(path, filename):
             model = pickle.load(f)
         return model, 'sklearn'
 
+@app.route('/debug')
+def debug():
+    return str(os.listdir(os.path.join(BASE_DIR, 'models')))
 
 @app.route('/')
 def index():
