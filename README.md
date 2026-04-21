@@ -159,4 +159,4 @@ Verified using **Select Rows → Distributions** in Orange:
 pip install pandas numpy scikit-learn matplotlib seaborn
 jupyter notebook
 ```
-Open `model_trained_der ver/Train_model_Dear_ver.ipynb` and run all cells.
+Open `models/models.ipynb` and run all cells.
