@@ -511,7 +511,7 @@ function clearStatus(elId) {
   el.textContent = '';
 }
 
-// ── Refresh sidebar + upload list ────────────────────────────────────────
+// ── Refresh sidebar ──────────────────────────────────────────────────────
 async function refreshModelsUI() {
   const res = await fetch('/models_status');
   const status = await res.json();
@@ -521,9 +521,11 @@ async function refreshModelsUI() {
   sidebar.innerHTML = [0, 1, 2].map(i => {
     const m = status[String(i)];
     if (m) {
+      // display_name from backend is already "Model N: Pretty Name", strip the prefix
+      const prettyName = m.display_name ? m.display_name.replace(/^Model \d+:\s*/, '') : m.name;
       return `<div class="model-slot-item loaded">
         <div class="slot-header">
-          <span class="slot-label loaded">Model ${i+1}</span>
+          <span class="slot-label loaded">Model ${i+1}: ${prettyName}</span>
           <span class="slot-tag">${m.type}</span>
         </div>
         <div class="slot-name">${m.name}</div>
@@ -597,16 +599,18 @@ function renderResults(data) {
       <div style="font-size:12px;color:var(--text2);margin-bottom:.6rem;font-weight:500;text-transform:uppercase;letter-spacing:.05em">Per-model results</div>
       <div class="results-grid">
         ${results.map(r => {
+          // model_name from backend is already "Model N: Pretty Name"
+          const displayLabel = r.model_name || `Model ${r.slot + 1}`;
           if (r.error) {
             return `<div class="result-card error-card">
-              <div class="rc-model">Model ${r.slot+1}: ${r.model_name}</div>
+              <div class="rc-model">${displayLabel}</div>
               <div style="font-size:13px;color:var(--red)">Error: ${r.error}</div>
             </div>`;
           }
           const isWinner = ensemble && r.predicted_class === ensemble.predicted_class;
           const confPct = r.confidence || 0;
           return `<div class="result-card ${isWinner ? 'winner' : ''}">
-            <div class="rc-model">Model ${r.slot+1} · ${r.model_type}</div>
+            <div class="rc-model">${displayLabel} · ${r.model_type}</div>
             <div class="rc-abbr">${r.abbr}</div>
             <div class="rc-name">${r.label}</div>
             <div class="rc-cls">class ${r.predicted_class}</div>
@@ -640,9 +644,10 @@ function renderResults(data) {
     const dist = model.proba_dist;
     const sorted = Object.entries(dist).sort((a, b) => parseFloat(b[1]) - parseFloat(a[1]));
     const topClass = sorted[0][0];
+    const displayLabel = model.model_name || `Model ${model.slot + 1}`;
     probaHtml += `
       <div class="card" style="margin-top:1rem">
-        <div class="card-title">Class probability distribution — Model ${model.slot + 1} (${model.model_name})</div>
+        <div class="card-title">Class probability distribution — ${displayLabel}</div>
         <div class="proba-section">
           ${sorted.map(([cls, pct]) => `
             <div class="proba-row">

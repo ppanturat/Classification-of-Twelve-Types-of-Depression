@@ -37,36 +37,47 @@ DEPRESSION_TYPES = {
 
 # Use an absolute path based on the current working directory
 BASE_DIR = os.path.dirname(__file__)
-MODELS_DIR = os.path.join(BASE_DIR, 'models') 
+MODELS_DIR = os.path.join(BASE_DIR, 'models')
+
+
+def format_model_name(filename):
+    """Convert filename like 'random_forest_model.pkl' to 'Random Forest'"""
+    name = filename.rsplit('.', 1)[0]          # strip extension
+    name = name.replace('-', '_')
+    parts = name.split('_')
+    # Drop generic suffixes
+    stopwords = {'model', 'classifier', 'clf', 'v1', 'v2', 'v3', 'final'}
+    parts = [p for p in parts if p.lower() not in stopwords]
+    return ' '.join(p.capitalize() for p in parts) if parts else filename
+
 
 def load_models_from_folder():
     print("Loading models from folder...")
-    # Debugging: Vercel logs will show you if the directory actually exists
     if not os.path.exists(MODELS_DIR):
         print(f"Directory not found at: {MODELS_DIR}")
         return
     print(MODELS_DIR)
-    # Filter files
     pkl_files = sorted([f for f in os.listdir(MODELS_DIR) if f.endswith('.pkl')])
-    
+
     for i, filename in enumerate(pkl_files[:3]):
         path = os.path.join(MODELS_DIR, filename)
         print(path)
         try:
-            # Ensure load_model_from_path doesn't require write access
             model, model_type = load_model_from_path(path, filename)
             loaded_models[i] = {
-                'model': model, 
-                'name': filename, 
-                'type': model_type, 
+                'model': model,
+                'name': filename,
+                'display_name': format_model_name(filename),
+                'type': model_type,
                 'path': path
             }
         except Exception as e:
-            # This will show up in Vercel's 'Logs' tab
             print(f"Failed to load {filename}: {str(e)}")
+
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 def load_model_from_path(path, filename):
     ext = filename.rsplit('.', 1)[1].lower()
@@ -83,8 +94,10 @@ def load_model_from_path(path, filename):
             model = pickle.load(f)
         return model, 'sklearn'
 
+
 # Load models at import time so the app works whether run directly or imported by a WSGI server.
 load_models_from_folder()
+
 
 @app.route('/debug')
 def debug():
@@ -106,7 +119,11 @@ def index():
 def models_status():
     status = {}
     for slot, info in loaded_models.items():
-        status[str(slot)] = {'name': info['name'], 'type': info['type']}
+        status[str(slot)] = {
+            'name': info['name'],
+            'display_name': f"Model {slot + 1}: {info['display_name']}",
+            'type': info['type']
+        }
     return jsonify(status)
 
 
@@ -144,7 +161,6 @@ def predict():
             if hasattr(model, 'predict_proba'):
                 proba = model.predict_proba(X)[0]
                 confidence = round(float(np.max(proba)) * 100, 1)
-                # Build full probability distribution
                 proba_dist = {
                     str(i): round(float(p) * 100, 1)
                     for i, p in enumerate(proba)
@@ -155,7 +171,7 @@ def predict():
             label_info = DEPRESSION_TYPES.get(pred_class, {"name": "Unknown", "abbr": "?"})
             results.append({
                 'slot': slot,
-                'model_name': info['name'],
+                'model_name': f"Model {slot + 1}: {info['display_name']}",
                 'model_type': info['type'],
                 'predicted_class': pred_class,
                 'label': label_info['name'],
@@ -167,7 +183,7 @@ def predict():
         except Exception as e:
             results.append({
                 'slot': slot,
-                'model_name': info['name'],
+                'model_name': f"Model {slot + 1}: {info['display_name']}",
                 'model_type': info['type'],
                 'predicted_class': None,
                 'label': None,
@@ -202,4 +218,4 @@ def predict():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5000)
